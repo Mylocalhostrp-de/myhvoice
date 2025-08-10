@@ -1,0 +1,12 @@
+client-main = 'client/client.js'
+client-type = 'js'
+client-files = [
+    'client/*',
+]
+
+main = 'server/main.js'
+type = 'js'
+
+required-permissions = [
+    "Extended Voice API"
+]
