@@ -13,24 +13,19 @@ class AltvVoiceServerModule {
         }
 
         this.callChannel = new alt.VoiceChannel(false, -1);
-        this.activeCalls = new Map(); // player.id -> anderer player
+        this.activeCalls = new Map();
 
-        this.radioChannel = new alt.VoiceChannel(false, -1); // Reichweite: praktisch unendlich
+        this.radioChannel = new alt.VoiceChannel(false, -1);
         if (config.USE_RADIO_FILTER) {
             this.radioChannel.filter = alt.hash("walkietalkie");
         }
-        this.playerRadioChannels = new Map(); // player -> channel number
+        this.playerRadioChannels = new Map();
 
         this.registerEvents();
         alt.log('myhvoiceServerModule init');
     }
 
     registerEvents() {
-        // alt.on('playerConnect', (player) => {
-        //     this.addToVoiceChannels(player);
-        //     this.setVoiceRange(player, config.VOICE_RANGES.LOW);
-        // });
-
         alt.on(config.EVENTS.CONNECT, (player) => {
             this.addToVoiceChannels(player);
             this.setVoiceRange(player, config.VOICE_RANGES.LOW); // Start mit Flüstern
@@ -106,9 +101,6 @@ class AltvVoiceServerModule {
     }
 
     changePlayerAliveStatus(player, isAlive) {
-        if (config.useDebugMode) {
-            alt.log("ev Change Deat player " + isAlive);
-        }
         player.isAlive = isAlive;
         if (isAlive == false)
         {
@@ -126,7 +118,6 @@ class AltvVoiceServerModule {
                 }
             }
             this.setVoiceRange(player, player.voiceRange);
-            //this.callChannel.unmutePlayer(player);
             if (this.isPlayerInCall(player)) {
                 this.callChannel.unmutePlayer(player);
             }
@@ -253,9 +244,6 @@ class AltvVoiceServerModule {
     
         this.activeCalls.set(caller.id, receiver);
         this.activeCalls.set(receiver.id, caller);
-    
-        //alt.emitClient(caller, 'client:PhoneCallStarted', receiver.id);
-        //alt.emitClient(receiver, 'client:PhoneCallStarted', caller.id);
     }
 
     phoneMute(player, mute) {
@@ -282,9 +270,6 @@ class AltvVoiceServerModule {
     
         this.activeCalls.delete(player.id);
         this.activeCalls.delete(partner.id);
-    
-        //alt.emitClient(player, 'client:PhoneCallEnded');
-        //alt.emitClient(partner, 'client:PhoneCallEnded');
     }
 
     radio(player, use) {
@@ -353,14 +338,11 @@ class AltvVoiceServerModule {
     
         if (state) {
             this.radioChannel.unmutePlayer(player); // beginnt zu sprechen
-            //alt.emitClient(player, 'client:RadioTalkingState', true);
         } else {
             this.radioChannel.mutePlayer(player); // hört auf
-            //alt.emitClient(player, 'client:RadioTalkingState', false);
         }
     }
 
-    // Prüft, ob ein Spieler aktuell in einem Call ist
     isPlayerInCall(player) {
         return this.activeCalls.has(player.id);
     }
