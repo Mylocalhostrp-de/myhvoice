@@ -6,7 +6,8 @@ export default {
         LOW: 3,    // Flüstern
         MID: 8,    // Normales Reden
         LONG: 15,  // Rufen
-        MEGA: 30   // Megafon
+        SCHR: 30,  // Schreien
+        MEGA: 60   // Megafon
     },
     EVENTS: {
         CONNECT: "server:myhvoice:connect",
