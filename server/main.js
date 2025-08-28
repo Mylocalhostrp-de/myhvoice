@@ -7,6 +7,7 @@ class AltvVoiceServerModule {
         this.lowRangeChannel = new alt.VoiceChannel(true, config.VOICE_RANGES.LOW);
         this.midRangeChannel = new alt.VoiceChannel(true, config.VOICE_RANGES.MID);
         this.longRangeChannel = new alt.VoiceChannel(true, config.VOICE_RANGES.LONG);
+        this.schreiRangeChannel = new alt.VoiceChannel(true, config.VOICE_RANGES.SCHR);
         this.MegafunRangeChannel = new alt.VoiceChannel(true, config.VOICE_RANGES.MEGA);
         if (config.USE_MEGA_FILTER) {
             this.MegafunRangeChannel.filter = alt.hash("megaphone");
@@ -15,10 +16,11 @@ class AltvVoiceServerModule {
         this.callChannel = new alt.VoiceChannel(false, -1);
         this.activeCalls = new Map();
 
-        this.radioChannel = new alt.VoiceChannel(false, -1);
-        if (config.USE_RADIO_FILTER) {
-            this.radioChannel.filter = alt.hash("walkietalkie");
-        }
+        // this.radioChannel = new alt.VoiceChannel(false, -1);
+        // if (config.USE_RADIO_FILTER) {
+        //     this.radioChannel.filter = alt.hash("walkietalkie");
+        // }
+        this.radioChannels = new Map();
         this.playerRadioChannels = new Map();
 
         this.registerEvents();
@@ -59,6 +61,7 @@ class AltvVoiceServerModule {
         this.lowRangeChannel.addPlayer(player);
         this.midRangeChannel.addPlayer(player);
         this.longRangeChannel.addPlayer(player);
+        this.schreiRangeChannel.addPlayer(player);
         this.MegafunRangeChannel.addPlayer(player);
     }
 
@@ -70,34 +73,36 @@ class AltvVoiceServerModule {
         this.lowRangeChannel.removePlayer(player);
         this.midRangeChannel.removePlayer(player);
         this.longRangeChannel.removePlayer(player);
+        this.schreiRangeChannel.removePlayer(player);
         this.MegafunRangeChannel.removePlayer(player);
     }
 
     muteInAllChannels(player) {
         if (config.useDebugMode) {
             alt.log("MuteInAllChannels: " + player);
-            if (this.isPlayerInCall(player)) {
-                alt.log("[MyHVoice] Spieler " + player.id + " ist aktuell in einem Call!");
-            } else {
-                alt.log("[MyHVoice] Spieler " + player.id + " ist NICHT in einem Call.");
-            }
-            if (this.playerRadioChannels.has(player)) {
-                alt.log("[MyHVoice] Spieler " + player.id + " ist aktuell im Funk!");
-            } else {
-                alt.log("[MyHVoice] Spieler " + player.id + " ist NICHT im Funk.");
-            }
+            // if (this.isPlayerInCall(player)) {
+            //     alt.log("[MyHVoice] Spieler " + player.id + " ist aktuell in einem Call!");
+            // } else {
+            //     alt.log("[MyHVoice] Spieler " + player.id + " ist NICHT in einem Call.");
+            // }
+            // if (this.playerRadioChannels.has(player)) {
+            //     alt.log("[MyHVoice] Spieler " + player.id + " ist aktuell im Funk!");
+            // } else {
+            //     alt.log("[MyHVoice] Spieler " + player.id + " ist NICHT im Funk.");
+            // }
         }
         this.lowRangeChannel.mutePlayer(player);
         this.midRangeChannel.mutePlayer(player);
         this.longRangeChannel.mutePlayer(player);
+        this.schreiRangeChannel.mutePlayer(player);
         this.MegafunRangeChannel.mutePlayer(player);
 
-        if (this.isPlayerInCall(player)) {
-            this.callChannel.mutePlayer(player);
-        }
-        if (this.playerRadioChannels.has(player)) {
-            this.radioChannel.mutePlayer(player);
-        }
+        // if (this.isPlayerInCall(player)) {
+        //     this.callChannel.mutePlayer(player);
+        // }
+        // if (this.playerRadioChannels.has(player)) {
+        //     this.radioChannel.mutePlayer(player);
+        // }
     }
 
     changePlayerAliveStatus(player, isAlive) {
@@ -121,9 +126,9 @@ class AltvVoiceServerModule {
             if (this.isPlayerInCall(player)) {
                 this.callChannel.unmutePlayer(player);
             }
-            if (this.playerRadioChannels.has(player)) {
-                this.radioChannel.unmutePlayer(player);
-            }
+            // if (this.playerRadioChannels.has(player)) {
+            //     this.radioChannel.unmutePlayer(player);
+            // }
             return;
         }
         else
@@ -132,6 +137,12 @@ class AltvVoiceServerModule {
                 alt.log("Change Deat player true");
             }
             this.muteInAllChannels(player);
+            if (this.isPlayerInCall(player)) {
+                this.callChannel.mutePlayer(player);
+            }
+            if (this.playerRadioChannels.has(player)) {
+                this.radioChannels.mutePlayer(player);
+            }
             return;
         }
         
@@ -148,30 +159,33 @@ class AltvVoiceServerModule {
         switch (range) {
             case 3:
                 this.lowRangeChannel.unmutePlayer(player);
-                if (this.isPlayerInCall(player)) {
-                    this.callChannel.unmutePlayer(player);
-                }
-                if (this.playerRadioChannels.has(player)) {
-                    this.radioChannel.unmutePlayer(player);
-                }
+                // if (this.isPlayerInCall(player)) {
+                //     this.callChannel.unmutePlayer(player);
+                // }
+                // if (this.playerRadioChannels.has(player)) {
+                //     this.radioChannel.unmutePlayer(player);
+                // }
                 break;
             case 8:
                 this.midRangeChannel.unmutePlayer(player);
-                if (this.isPlayerInCall(player)) {
-                    this.callChannel.unmutePlayer(player);
-                }
-                if (this.playerRadioChannels.has(player)) {
-                    this.radioChannel.unmutePlayer(player);
-                }
+                // if (this.isPlayerInCall(player)) {
+                //     this.callChannel.unmutePlayer(player);
+                // }
+                // if (this.playerRadioChannels.has(player)) {
+                //     this.radioChannel.unmutePlayer(player);
+                // }
                 break;
             case 15:
                 this.longRangeChannel.unmutePlayer(player);
-                if (this.isPlayerInCall(player)) {
-                    this.callChannel.unmutePlayer(player);
-                }
-                if (this.playerRadioChannels.has(player)) {
-                    this.radioChannel.unmutePlayer(player);
-                }
+                // if (this.isPlayerInCall(player)) {
+                //     this.callChannel.unmutePlayer(player);
+                // }
+                // if (this.playerRadioChannels.has(player)) {
+                //     this.radioChannel.unmutePlayer(player);
+                // }
+                break;
+            case 30:
+                this.schreiRangeChannel.unmutePlayer(player);
                 break;
             default:
                 break;
@@ -197,6 +211,9 @@ class AltvVoiceServerModule {
                 this.setVoiceRange(player, 15);
                 break;
             case 15:
+                this.setVoiceRange(player, 30);
+                break;
+            case 30:
                 this.setVoiceRange(player, 0);
                 this.muteInAllChannels(player); // komplett stumm
                 alt.emitClient(player, 'client:UpdateCurrentAltVoiceRange', 0);
@@ -291,55 +308,141 @@ class AltvVoiceServerModule {
         }
     }
 
+    // setPlayerRadioChannel(player, channel) {
+    //     if (channel === 0) {
+    //         if (config.useDebugMode) {
+    //             alt.log("setPlayerRadioChannel: " + player + " channel " + channel + " = LeaveRadioChannel");
+    //         }
+    //         this.radioChannel.mutePlayer(player);
+    //         this.playerRadioChannels.delete(player);
+    //         return;
+    //     }
+
+    //     if (config.useDebugMode) {
+    //         alt.log("setPlayerRadioChannel: " + player + " channel " + channel);
+    //     }
+    
+    //     this.radioChannel.addPlayer(player);
+    //     this.radioChannel.mutePlayer(player);
+    //     this.playerRadioChannels.set(player, channel);
+    // }
+
+    // joinRadioChannel(player, channel) {
+    //     //if (!this.playerRadioChannels.has(player)) return;
+    //     if (config.useDebugMode) {
+    //         alt.log("JoinRadio player: " + player);
+    //     }
+    //     this.radioChannels.addPlayer(player);
+    //     this.radioChannels.mutePlayer(player);
+    //     this.playerRadioChannels.set(player, channel);
+    // }
+
+    // leaveRadioChannel(player) {
+    //     if (!this.playerRadioChannels.has(player)) return;
+    //     if (config.useDebugMode) {
+    //         alt.log("LeaveRadio player: " + player);
+    //     }
+    //     this.radioChannels.mutePlayer(player);
+    //     this.radioChannels.removePlayer(player);
+    //     this.playerRadioChannels.delete(player);
+    // }
+
+    // toggleRadioSpeaking(player, state) {
+    //     if (!this.playerRadioChannels.has(player)) return;
+    //     if (config.useDebugMode) {
+    //         alt.log("Use Radiospeaking player: " + player + " Use " + state);
+    //     }
+    
+    //     if (state) {
+    //         this.radioChannels.unmutePlayer(player); // beginnt zu sprechen
+    //     } else {
+    //         this.radioChannels.mutePlayer(player); // hört auf
+    //     }
+    // }
+
     setPlayerRadioChannel(player, channel) {
-        if (channel === 0) {
-            if (config.useDebugMode) {
-                alt.log("setPlayerRadioChannel: " + player + " channel " + channel + " = LeaveRadioChannel");
+        // Erst alten Funk verlassen
+        this.leaveRadioChannel(player);
+
+        if (channel === 0) return;
+
+        // Wenn der Channel noch nicht existiert, erstellen
+        if (!this.radioChannels.has(channel)) {
+            this.radioChannels.set(channel, new alt.VoiceChannel(false, -1));
+            if (config.USE_RADIO_FILTER) {
+                this.radioChannels.filter = alt.hash("walkietalkie");
             }
-            this.radioChannel.mutePlayer(player);
-            this.playerRadioChannels.delete(player);
-            return;
         }
 
-        if (config.useDebugMode) {
-            alt.log("setPlayerRadioChannel: " + player + " channel " + channel);
-        }
-    
-        this.radioChannel.addPlayer(player);
-        this.radioChannel.mutePlayer(player);
+        const chan = this.radioChannels.get(channel);
+        chan.addPlayer(player);
+        chan.mutePlayer(player);
+
         this.playerRadioChannels.set(player, channel);
+
+        if (config.useDebugMode) {
+            alt.log(`[FUNK] Spieler ${player.id} ist jetzt in Kanal ${channel}`);
+        }
     }
 
     joinRadioChannel(player, channel) {
-        //if (!this.playerRadioChannels.has(player)) return;
         if (config.useDebugMode) {
-            alt.log("JoinRadio player: " + player);
+            alt.log(`JoinRadio player ${player.id} channel ${channel}`);
         }
-        this.radioChannel.addPlayer(player);
-        this.radioChannel.mutePlayer(player);
+
+        // Falls der Channel noch nicht existiert → erstellen
+        if (!this.radioChannels.has(channel)) {
+            this.radioChannels.set(channel, new alt.VoiceChannel(false, -1));
+            if (config.USE_RADIO_FILTER) {
+                this.radioChannels.filter = alt.hash("walkietalkie");
+            }
+        }
+
+        // Spieler altem Channel entfernen, falls er schon in einem war
+        if (this.playerRadioChannels.has(player)) {
+            const oldChannel = this.playerRadioChannels.get(player);
+            const oldVC = this.radioChannels.get(oldChannel);
+            if (oldVC) oldVC.removePlayer(player);
+        }
+
+        // Spieler in neuen Channel packen
+        const vc = this.radioChannels.get(channel);
+        vc.addPlayer(player);
+        vc.mutePlayer(player); // erstmal gemutet
         this.playerRadioChannels.set(player, channel);
     }
-
+    
     leaveRadioChannel(player) {
-        if (!this.playerRadioChannels.has(player)) return;
-        if (config.useDebugMode) {
-            alt.log("LeaveRadio player: " + player);
+        const channel = this.playerRadioChannels.get(player);
+        if (!channel) return;
+
+        const chan = this.radioChannels.get(channel);
+        if (chan) {
+            chan.removePlayer(player);
         }
-        this.radioChannel.mutePlayer(player);
+
         this.playerRadioChannels.delete(player);
-        this.radioChannel.removePlayer(player);
+
+        if (config.useDebugMode) {
+            alt.log(`[FUNK] Spieler ${player.id} hat Kanal ${channel} verlassen`);
+        }
     }
 
     toggleRadioSpeaking(player, state) {
-        if (!this.playerRadioChannels.has(player)) return;
-        if (config.useDebugMode) {
-            alt.log("Use Radiospeaking player: " + player + " Use " + state);
-        }
-    
+        const channel = this.playerRadioChannels.get(player);
+        if (!channel) return;
+
+        const chan = this.radioChannels.get(channel);
+        if (!chan) return;
+
         if (state) {
-            this.radioChannel.unmutePlayer(player); // beginnt zu sprechen
+            chan.unmutePlayer(player);
         } else {
-            this.radioChannel.mutePlayer(player); // hört auf
+            chan.mutePlayer(player);
+        }
+
+        if (config.useDebugMode) {
+            alt.log(`[FUNK] Spieler ${player.id} speaking=${state} auf Kanal ${channel}`);
         }
     }
 
