@@ -30,6 +30,8 @@ function getMicPercentFromRange(range) {
         case 8:   // Normal
             return 50;
         case 15:  // Rufen
+            return 75;
+        case 30:  // Schreien
             return 100;
         default:
             return 0;
