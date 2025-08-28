@@ -273,6 +273,7 @@ class AltvVoiceClientModule {
                 funkView = null;
                 alt.showCursor(false); // Cursor verstecken
                 isFunkUiOpen = false;
+                alt.emitServer('server:LeaveRadioChannel');
             }
             if (config.USE_HUD) updateHudRadio(this.isRadioON);
         });
