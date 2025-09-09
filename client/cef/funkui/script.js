@@ -3,6 +3,42 @@ const channels = Array.from({length: 1000}, (_, i) => ({ name: `Kanal ${i+1}`, f
 
 let currentFunkChannel = '';
 
+var RadioAudioLoop = null,
+    RadioAudioOnce = null;
+
+function playRadioAudioLoop() {
+    if (RadioAudioLoop == null) {
+        RadioAudioLoop = new Audio("./sounds/radio_noise.wav");
+        RadioAudioLoop.loop = true;
+        RadioAudioLoop.play();
+    }
+}
+
+function stopRadioAudioLoop() {
+    if (RadioAudioLoop != null) {
+        setTimeout(function() {
+            RadioAudioLoop.pause();
+            RadioAudioLoop.loop = false;
+            RadioAudioLoop = null;
+        }, 100);
+    }
+}
+
+function playRadioAudio(path) {
+    RadioAudioOnce = new Audio(path);
+    RadioAudioOnce.play();
+}
+
+function stopRadioAudio() {
+    if (RadioAudioOnce != null) {
+        RadioAudioOnce.pause();
+        RadioAudioOnce = null;
+        return true;
+    } else {
+        return false;
+    }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('FunkBox-funkInput');
     const joinBtn = document.querySelector('.funkbuttonbeitreten');
@@ -16,10 +52,12 @@ window.addEventListener('DOMContentLoaded', () => {
     leftBtn.onclick = () => {
         channelIndex = (channelIndex - 1 + channels.length) % channels.length;
         input.value = channels[channelIndex].name;
+        playRadioAudioLoop();
     };
     rightBtn.onclick = () => {
         channelIndex = (channelIndex + 1) % channels.length;
         input.value = channels[channelIndex].name;
+        playRadioAudioLoop();
     };
     joinBtn.onclick = () => {
         let freq = input.value.trim().replace(/,/g, '.'); // Kommas zu Punkten
@@ -32,6 +70,8 @@ window.addEventListener('DOMContentLoaded', () => {
         if ('alt' in window) {
             alt.emit('funkui:joinChannel', freq);
         }
+        stopRadioAudioLoop();
+        playRadioAudio("./sounds/radio_join.wav");
         //alert('Du bist jetzt im Kanal: ' + freq);
     };
 
