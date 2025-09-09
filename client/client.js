@@ -57,6 +57,7 @@ class AltvVoiceClientModule {
         this.isRadioON = false;
         this.isInRadio = false;
         this.isRadioTalking = false;
+        this.RadioChannel = 0;
         this.registerEvents();
         alt.log('myhvoice ClientModule init');
     }
@@ -93,17 +94,20 @@ class AltvVoiceClientModule {
                     natives.requestAnimDict('cellphone@in_car@ds');
                     //alt.log("Versuche Animation abzuspielen...");
                     if (natives.hasAnimDictLoaded('cellphone@in_car@ds')) {
-                    //alt.log("Animation-Aufruf abgeschlossen");
-                    natives.taskPlayAnim(this.localPlayer, "cellphone@in_car@ds", "cellphone_text_read_base", 8, 1, -1, 49, 1, false, false, false);
+                        //alt.log("Animation-Aufruf abgeschlossen");
+                        natives.taskPlayAnim(this.localPlayer, "cellphone@in_car@ds", "cellphone_text_read_base", 8, 1, -1, 49, 1, false, false, false);
                     }
                     alt.emitServer('server:Radioprop', true);
                     funkView = new alt.WebView('http://resource/client/cef/funkui/index.html');
                     funkView.focus();
                     alt.showCursor(true); // Cursor anzeigen
-                    // Optional: Status an UI senden
-                    funkView.emit('funkui:talking', this.isRadioTalking);
+                    if (this.isInRadio == true)
+                    {
+                        funkView.emit('funkui:setChannel', this.RadioChannel);
+                    }
                     funkView.on('funkui:joinChannel', (freq) => {
                         alt.log("funkjoinchannel " + freq);
+                        this.RadioChannel = freq;
                         alt.emitServer('server:JoinRadioChannel', freq);
                         this.isInRadio = true;
                     });
