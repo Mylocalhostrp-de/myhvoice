@@ -16,10 +16,6 @@ class AltvVoiceServerModule {
         this.callChannel = new alt.VoiceChannel(false, -1);
         this.activeCalls = new Map();
 
-        // this.radioChannel = new alt.VoiceChannel(false, -1);
-        // if (config.USE_RADIO_FILTER) {
-        //     this.radioChannel.filter = alt.hash("walkietalkie");
-        // }
         this.radioChannels = new Map();
         this.playerRadioChannels = new Map();
 
@@ -96,13 +92,6 @@ class AltvVoiceServerModule {
         this.longRangeChannel.mutePlayer(player);
         this.schreiRangeChannel.mutePlayer(player);
         this.MegafunRangeChannel.mutePlayer(player);
-
-        // if (this.isPlayerInCall(player)) {
-        //     this.callChannel.mutePlayer(player);
-        // }
-        // if (this.playerRadioChannels.has(player)) {
-        //     this.radioChannel.mutePlayer(player);
-        // }
     }
 
     changePlayerAliveStatus(player, isAlive) {
@@ -126,9 +115,6 @@ class AltvVoiceServerModule {
             if (this.isPlayerInCall(player)) {
                 this.callChannel.unmutePlayer(player);
             }
-            // if (this.playerRadioChannels.has(player)) {
-            //     this.radioChannel.unmutePlayer(player);
-            // }
             return;
         }
         else
@@ -159,30 +145,12 @@ class AltvVoiceServerModule {
         switch (range) {
             case 3:
                 this.lowRangeChannel.unmutePlayer(player);
-                // if (this.isPlayerInCall(player)) {
-                //     this.callChannel.unmutePlayer(player);
-                // }
-                // if (this.playerRadioChannels.has(player)) {
-                //     this.radioChannel.unmutePlayer(player);
-                // }
                 break;
             case 8:
                 this.midRangeChannel.unmutePlayer(player);
-                // if (this.isPlayerInCall(player)) {
-                //     this.callChannel.unmutePlayer(player);
-                // }
-                // if (this.playerRadioChannels.has(player)) {
-                //     this.radioChannel.unmutePlayer(player);
-                // }
                 break;
             case 15:
                 this.longRangeChannel.unmutePlayer(player);
-                // if (this.isPlayerInCall(player)) {
-                //     this.callChannel.unmutePlayer(player);
-                // }
-                // if (this.playerRadioChannels.has(player)) {
-                //     this.radioChannel.unmutePlayer(player);
-                // }
                 break;
             case 30:
                 this.schreiRangeChannel.unmutePlayer(player);
@@ -307,58 +275,6 @@ class AltvVoiceServerModule {
             player.deleteStreamSyncedMeta("player_myhvoiceprop");
         }
     }
-
-    // setPlayerRadioChannel(player, channel) {
-    //     if (channel === 0) {
-    //         if (config.useDebugMode) {
-    //             alt.log("setPlayerRadioChannel: " + player + " channel " + channel + " = LeaveRadioChannel");
-    //         }
-    //         this.radioChannel.mutePlayer(player);
-    //         this.playerRadioChannels.delete(player);
-    //         return;
-    //     }
-
-    //     if (config.useDebugMode) {
-    //         alt.log("setPlayerRadioChannel: " + player + " channel " + channel);
-    //     }
-    
-    //     this.radioChannel.addPlayer(player);
-    //     this.radioChannel.mutePlayer(player);
-    //     this.playerRadioChannels.set(player, channel);
-    // }
-
-    // joinRadioChannel(player, channel) {
-    //     //if (!this.playerRadioChannels.has(player)) return;
-    //     if (config.useDebugMode) {
-    //         alt.log("JoinRadio player: " + player);
-    //     }
-    //     this.radioChannels.addPlayer(player);
-    //     this.radioChannels.mutePlayer(player);
-    //     this.playerRadioChannels.set(player, channel);
-    // }
-
-    // leaveRadioChannel(player) {
-    //     if (!this.playerRadioChannels.has(player)) return;
-    //     if (config.useDebugMode) {
-    //         alt.log("LeaveRadio player: " + player);
-    //     }
-    //     this.radioChannels.mutePlayer(player);
-    //     this.radioChannels.removePlayer(player);
-    //     this.playerRadioChannels.delete(player);
-    // }
-
-    // toggleRadioSpeaking(player, state) {
-    //     if (!this.playerRadioChannels.has(player)) return;
-    //     if (config.useDebugMode) {
-    //         alt.log("Use Radiospeaking player: " + player + " Use " + state);
-    //     }
-    
-    //     if (state) {
-    //         this.radioChannels.unmutePlayer(player); // beginnt zu sprechen
-    //     } else {
-    //         this.radioChannels.mutePlayer(player); // hört auf
-    //     }
-    // }
 
     setPlayerRadioChannel(player, channel) {
         // Erst alten Funk verlassen
